@@ -8,7 +8,7 @@ export default function Home() {
   const [serverUrl, setServerUrl] = useState('');
   const [serverPort, setServerPort] = useState('443');
   const [username, setUsername] = useState('tien');
-  const [model, setModel] = useState('large-v3');
+  const [model, setModel] = useState('large-v2');
   const [useVad, setUseVad] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
