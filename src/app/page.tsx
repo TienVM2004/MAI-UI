@@ -230,6 +230,7 @@ export default function Home() {
               onChange={(e) => setModel(e.target.value)}
               className="w-full p-3 bg-white/20 border border-white/30 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
             >
+              <option value="large-v2">Large V2</option>
               <option value="large-v3">Large V3</option>
               <option value="medium">Medium</option>
               <option value="small">Small</option>
