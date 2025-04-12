@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  /* Base theme colors */
+  --background: #ffffff;
+  --foreground: #171717;
+  
+  /* Lofi sunset theme colors */
+  --sunset-orange: #ff9966;
+  --sunset-pink: #ff5e62;
+  --sunset-purple: #6B5B95;
+  --sunset-blue: #45567d;
+  
+  /* Accent colors */
+  --accent-pink: #ff7eb6;
+  --accent-purple: #7b68ee;
+  --accent-yellow: #ffd166;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom scrollbar for lofi vibes */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--sunset-pink), var(--sunset-purple));
+  border-radius: 10px;
+}
+
+/* Smooth transitions */
+button, input, select {
+  transition: all 0.3s ease;
+}
+
+/* Custom focus styles */
+input:focus, select:focus, button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-pink);
+}
