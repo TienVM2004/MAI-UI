@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { AudioManager } from '../../utils/audioManager';
-import { WebSocketManager, TranscriptSegment, ServerConfig as BaseServerConfig } from '../../utils/websocketManager';
+import { MeetingSummary, WebSocketManager, TranscriptSegment, ServerConfig as BaseServerConfig } from '../../utils/websocketManager';
 
 // Add new interface for better formatting of multilingual transcriptions
 interface FormattedTranslations {
