@@ -771,7 +771,7 @@ export default function Room() {
                 ) : typeof value === 'object' ? (
                   // Handle nested objects (like Topics)
                   <div className="pl-3 space-y-3">
-                    {Object.entries(value).map(([subKey, subValue]) => (
+                    {Object.entries(value || {}).map(([subKey, subValue]) => (
                       <div key={subKey} className="mb-2">
                         <h5 className="text-sm font-medium text-purple-300 mb-1">{subKey}</h5>
                         {Array.isArray(subValue) ? (
