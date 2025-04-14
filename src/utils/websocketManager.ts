@@ -20,6 +20,11 @@ export interface TranscriptSegment {
   translations?: Record<string, string>;
 }
 
+export interface MeetingSummary {
+  summary: string;
+  timestamp?: number;
+}
+
 export interface ServerConfig {
   serverUrl: string;
   serverPort: string;
@@ -42,11 +47,13 @@ export class WebSocketManager {
   private multilingualTranscript: Array<[number, Record<string, string>]> = [];
   private lastSegment: Array<[number, TranscriptionData]> | null = null;
   private availableLanguages: string[] = [];
+  private meetingSummary: string = "";
   
   onTranscription?: (data: TranscriptSegment) => void;
   onStatusChange?: (status: 'connected' | 'disconnected' | 'error' | 'waiting' | 'connecting') => void;
   onLanguageDetected?: (language: string, probability: number) => void;
   onAvailableLanguagesChange?: (languages: string[]) => void;
+  onSummary?: (data: MeetingSummary) => void;
 
   constructor(config: ServerConfig) {
     this.config = config;
@@ -150,6 +157,22 @@ export class WebSocketManager {
           this.onLanguageDetected(data.language, data.language_prob);
         }
         return;
+      }
+      
+      // Handle meeting summary data
+      if (data.summary !== undefined) {
+        this.lastResponseReceived = Date.now();
+        try {
+          this.meetingSummary = data.summary;
+          if (this.onSummary) {
+            this.onSummary({
+              summary: data.summary,
+              timestamp: Date.now()
+            });
+          }
+        } catch (e) {
+          console.error("Error processing summary data:", e);
+        }
       }
       
       // Handle transcript data - most important part for transcription
@@ -408,4 +431,8 @@ export class WebSocketManager {
   getAvailableLanguages(): string[] {
     return this.availableLanguages;
   }
-} 
+  
+  getMeetingSummary(): string {
+    return this.meetingSummary;
+  }
+}
