@@ -5,7 +5,7 @@ export interface TranscriptionData {
   start: number;
   end: number;
   completed: boolean;
-  name?: string;
+  client_name?: string;
   same_output_count?: number;
   timestamp?: number;
 }
@@ -305,7 +305,7 @@ export class WebSocketManager {
             id: String(segment.uid || 'transcript-' + timestamp),
             text: segment.text,
             timestamp: timestamp,
-            name: segment.name || this.config.username,
+            name: segment.client_name || 'Unknown', // Use 'Unknown' instead of current username as fallback
             completed: segment.completed || true,
             language: segment.language,
             translations: matchingTranslation
@@ -327,7 +327,7 @@ export class WebSocketManager {
               id: `in-progress-${timestamp}`,
               text: data.text,
               timestamp: timestamp,
-              name: data.name || this.config.username,
+              name: data.client_name || 'Unknown', // Use 'Unknown' instead of current username as fallback
               completed: false,
               language: data.language,
               translations: {}
