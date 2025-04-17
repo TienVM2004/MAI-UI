@@ -106,6 +106,11 @@ const TranscriptionBlock = ({
       <div className="text-gray-400 text-xs mb-1 flex justify-between"> {/* Adjusted text color */}
         <span className="flex items-center space-x-1">
           <span>{transcript.completed ? "Completed" : "Live"}</span>
+          {transcript.name && (
+            <span className="px-1.5 py-0.5 bg-gray-600/50 text-gray-300 rounded-full text-xs ml-1">
+              {transcript.name}
+            </span>
+          )}
           {transcript.language && (
             <span className="px-1.5 py-0.5 bg-gray-600/50 text-gray-300 rounded-full text-xs ml-1"> {/* Adjusted colors */}
               {transcript.language}
@@ -1007,6 +1012,37 @@ export default function Room() {
                   {renderTranslations()}
                 </div>
               )}
+              
+              {/* Conversation threads - grouped by speaker */}
+              <div className="mt-6 space-y-6">
+                {conversationDisplay.map((thread) => (
+                  <div key={`thread-${thread.speaker}`} className="mb-4">
+                    <div className="flex items-center mb-2">
+                      <span className="text-sm font-medium text-gray-300">
+                        {thread.speaker}
+                      </span>
+                      {thread.isUser && (
+                        <span className="ml-2 px-1.5 py-0.5 bg-purple-800/50 text-purple-300 rounded-full text-xs">
+                          You
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {thread.segments.map((segment) => (
+                        <TranscriptionBlock
+                          key={segment.id}
+                          transcript={segment}
+                          showAllTranslations={showAllTranslations}
+                          selectedLanguage={selectedLanguage}
+                          detectedLanguage={detectedLanguage}
+                          isUser={thread.isUser}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
               
               {/* Latest Transcription Section - always at the bottom */}
               <div className="mt-4">
