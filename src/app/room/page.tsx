@@ -838,7 +838,7 @@ export default function Room() {
       </div>
 
       {/* Main content area with backdrop blur for lofi effect */}
-      <div className="max-w-4xl mx-auto relative z-10 w-full bg-black/20 backdrop-blur-md rounded-xl p-6 shadow-xl"> {/* Added container styling */}
+      <div className="max-w-1xl mx-auto relative z-10 w-full bg-black/20 backdrop-blur-md rounded-xl p-6 shadow-xl"> {/* Added container styling */}
         {/* Header section with connection status and controls */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-black">Live Transcription Room</h1> {/* Changed text color */}
@@ -966,39 +966,15 @@ export default function Room() {
           </div>
         </div>
         
-        {/* Tab navigation */}
-        <div className="flex mb-4">
-          <button
-            onClick={() => setActiveTab('transcription')}
-            className={`px-4 py-2 rounded-t-lg font-medium text-sm transition-colors duration-200 ${
-              activeTab === 'transcription'
-                ? 'bg-black/30 backdrop-blur-sm text-white border-b-2 border-indigo-500'
-                : 'bg-black/10 backdrop-blur-sm text-gray-400 hover:text-white'
-            }`}
-          >
-            Live Transcription
-          </button>
-          <button
-            onClick={() => setActiveTab('summary')}
-            className={`px-4 py-2 rounded-t-lg font-medium text-sm transition-colors duration-200 ${
-              activeTab === 'summary'
-                ? 'bg-black/30 backdrop-blur-sm text-white border-b-2 border-purple-500'
-                : 'bg-black/10 backdrop-blur-sm text-gray-400 hover:text-white'
-            }`}
-          >
-            Meeting Summary
-          </button>
-        </div>
-        
-        {/* Tab content */}
-        {activeTab === 'transcription' ? (
-          /* Global chronological transcription display - Adjusted for dark theme */
-          <div className="bg-black/30 backdrop-blur-sm shadow-lg rounded-lg p-4 mb-6"> {/* Adjusted colors */}
-            <h2 className="text-lg font-medium text-white/95 mb-3 border-b border-gray-600/50 pb-2">Transcription History</h2> {/* Adjusted colors */}
+        {/* Side-by-side layout for transcriptions and summary */}
+        <div className="flex gap-4 mb-6">
+          {/* Transcriptions panel - 70% width */}
+          <div className="w-[70%] bg-black/30 backdrop-blur-sm shadow-lg rounded-lg p-4"> 
+            <h2 className="text-lg font-medium text-white/95 mb-3 border-b border-gray-600/50 pb-2">Transcription History</h2>
             
             {/* Scrollable transcript container - holds all transcripts chronologically */}
             <div 
-              className="max-h-[500px] overflow-y-auto pr-2 pb-3 space-y-4" /* Added space-y-4 */
+              className="max-h-[600px] overflow-y-auto pr-2 pb-3 space-y-4" /* Increased height */
               style={{ scrollBehavior: 'smooth' }}
               ref={el => {
                 // Auto-scroll to bottom when content changes
@@ -1010,20 +986,20 @@ export default function Room() {
               {/* Translations Section */}
               {displayTranslations.length > 0 && (
                 <div className="mb-4">
-                  <h3 className="text-md font-medium text-gray-300 mb-2">Translations</h3> {/* Adjusted colors */}
+                  <h3 className="text-md font-medium text-gray-300 mb-2">Translations</h3>
                   {renderTranslations()}
                 </div>
               )}
               
               {/* Latest Transcription Section - always at the bottom */}
               <div className="mt-4">
-                <h3 className="text-md font-medium text-gray-300 mb-2">Latest Transcription</h3> {/* Adjusted colors */}
+                <h3 className="text-md font-medium text-gray-300 mb-2">Latest Transcription</h3>
                 {renderLatestTranscription()}
               </div>
               
-              {/* Debug info for transcript IDs - Adjusted for dark theme */}
+              {/* Debug info for transcript IDs */}
               {debugMode && (
-                <div className="mt-4 text-xs text-gray-500 border-t border-gray-700/50 pt-2"> {/* Adjusted colors */}
+                <div className="mt-4 text-xs text-gray-500 border-t border-gray-700/50 pt-2">
                   <p>Global Transcript ID: {globalTranscriptId || 'None'}</p>
                   <p>Newest Transcript ID: {newestTranscriptId || 'None'}</p>
                   <p>Display Transcripts: {displayTranscripts.length}</p>
@@ -1032,16 +1008,16 @@ export default function Room() {
               )}
             </div>
           </div>
-        ) : (
-          /* Meeting Summary Display */
-          <div className="bg-black/30 backdrop-blur-sm shadow-lg rounded-lg p-4 mb-6">
+          
+          {/* Summary panel - 30% width */}
+          <div className="w-[30%] bg-black/30 backdrop-blur-sm shadow-lg rounded-lg p-4">
             <h2 className="text-lg font-medium text-white/95 mb-3 border-b border-gray-600/50 pb-2">Meeting Summary</h2>
             
-            <div className="max-h-[500px] overflow-y-auto pr-2 pb-3">
+            <div className="max-h-[600px] overflow-y-auto pr-2 pb-3"> {/* Increased height */}
               {renderMeetingSummary()}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
