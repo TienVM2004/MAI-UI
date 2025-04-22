@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation';
 export default function Home() {
   const router = useRouter();
   const [serverUrl, setServerUrl] = useState('');
-  const [serverPort, setServerPort] = useState('443');
-  const [username, setUsername] = useState('Tốn Liền');
-  const [model, setModel] = useState('large-v2');
-  const [useVad, setUseVad] = useState(true);
+  // Fixed values as per requirements
+  const serverPort = '443';
+  const [username, setUsername] = useState('Chill Guy');
+  const model = 'large-v2';
+  const useVad = true;
   const [error, setError] = useState<string | null>(null);
   
   // Audio device selection state
@@ -162,19 +163,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="mb-5">
-            <label className="block text-sm font-medium mb-1 text-black">Server Port</label>
-            <input
-              type="text"
-              value={serverPort}
-              onChange={(e) => setServerPort(e.target.value)}
-              className="w-full p-3 bg-white/20 border border-white/30 rounded-md text-black placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-pink-400"
-              required
-            />
-            <p className="text-xs text-black/80 mt-1">
-              For Cloudflare tunnels, use port 443 (default HTTPS port)
-            </p>
-          </div>
+          {/* Server port is fixed at 443 */}
           
           <div className="mb-5">
             <label className="block text-sm font-medium mb-1 text-black">Your Name</label>
@@ -182,7 +171,8 @@ export default function Home() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3 bg-white/20 border border-white/30 rounded-md text-black placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-pink-400"
+              className="w-full p-3 bg-white/20 border border-white/30 rounded-md text-black placeholder-black/70 focus:outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Enter your name"
               required
             />
           </div>
@@ -223,34 +213,8 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="mb-5">
-            <label className="block text-sm font-medium mb-1 text-black">Model</label>
-            <select
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              className="w-full p-3 bg-white/20 border border-white/30 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-pink-400"
-            >
-              <option value="large-v2">Large V2</option>
-              <option value="large-v3">Large V3</option>
-              <option value="medium">Medium</option>
-              <option value="small">Small</option>
-              <option value="base">Base</option>
-            </select>
-            <p className="text-xs text-black/80 mt-1">
-              Select the same model that your server is using
-            </p>
-          </div>
-          
-          <div className="mb-6 flex items-center">
-            <input
-              type="checkbox"
-              checked={useVad}
-              onChange={(e) => setUseVad(e.target.checked)}
-              className="w-5 h-5 mr-2 accent-pink-500"
-              id="vad-checkbox"
-            />
-            <label htmlFor="vad-checkbox" className="text-sm text-black">Use Voice Activity Detection</label>
-          </div>
+          {/* Model is fixed at large-v2 */}
+          {/* Voice Activity Detection is enabled by default */}
           
           <button
             type="submit"
