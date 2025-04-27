@@ -32,6 +32,7 @@ export interface ServerConfig {
   useVad: boolean;
   username: string;
   selectedDeviceId?: string;
+  selectedInputLanguage?: string;
 }
 
 export class WebSocketManager {
@@ -48,12 +49,14 @@ export class WebSocketManager {
   private lastSegment: Array<[number, TranscriptionData]> | null = null;
   private availableLanguages: string[] = [];
   private meetingSummary: string = "";
+  private selectedInputLanguage: string | null = null;
   
   onTranscription?: (data: TranscriptSegment) => void;
   onStatusChange?: (status: 'connected' | 'disconnected' | 'error' | 'waiting' | 'connecting') => void;
   onLanguageDetected?: (language: string, probability: number) => void;
   onAvailableLanguagesChange?: (languages: string[]) => void;
   onSummary?: (data: MeetingSummary) => void;
+  onInputLanguageChange?: (language: string | null) => void;
 
   constructor(config: ServerConfig) {
     this.config = config;
@@ -102,11 +105,20 @@ export class WebSocketManager {
       model: this.config.model,
       use_vad: this.config.useVad,
       max_clients: 4,
-      max_connection_time: 6000
+      max_connection_time: 6000,
+      input_language: this.config.selectedInputLanguage || null
     };
     
     if (this.socket?.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify(initialData));
+    }
+    
+    // Initialize selected input language from config
+    if (this.config.selectedInputLanguage) {
+      this.selectedInputLanguage = this.config.selectedInputLanguage;
+      if (this.onInputLanguageChange) {
+        this.onInputLanguageChange(this.selectedInputLanguage);
+      }
     }
   }
 
@@ -148,6 +160,11 @@ export class WebSocketManager {
         this.lastResponseReceived = Date.now();
         this.serverBackend = data.backend;
         this.onStatusChange?.('connected');
+        // Update available languages - always
+        this.availableLanguages = data.allowed_languages;
+        if (this.onAvailableLanguagesChange) {
+          this.onAvailableLanguagesChange(data.allowed_languages);
+        }
         return;
       }
       
@@ -434,5 +451,47 @@ export class WebSocketManager {
   
   getMeetingSummary(): string {
     return this.meetingSummary;
+  }
+  
+  /**
+   * Get the currently selected input language
+   * @returns The currently selected input language or null if set to "All" (auto-detect)
+   */
+  getSelectedInputLanguage(): string | null {
+    return this.selectedInputLanguage;
+  }
+  
+  /**
+   * Set the input language for transcription
+   * @param language The language code to set, or null/"All" for automatic language detection
+   * @returns true if the message was sent successfully, false otherwise
+   */
+  setInputLanguage(language: string | null): boolean {
+    // Check if socket is connected
+    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+      return false;
+    }
+    
+    try {
+      // Store the selected language
+      this.selectedInputLanguage = language;
+      
+      // Notify listeners of the change
+      if (this.onInputLanguageChange) {
+        this.onInputLanguageChange(language);
+      }
+      
+      // Send language selection message to server
+      this.socket.send(JSON.stringify({
+        type: 'set_input_language',
+        uid: this.uid,
+        language: language
+      }));
+      
+      return true;
+    } catch (error) {
+      console.error('Error sending language selection:', error);
+      return false;
+    }
   }
 }

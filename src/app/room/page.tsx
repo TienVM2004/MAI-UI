@@ -235,6 +235,15 @@ export default function Room() {
     }
     return null;
   });
+  
+  // Add state for input language selection
+  const [selectedInputLanguage, setSelectedInputLanguage] = useState<string | null>(() => {
+    // Initialize from localStorage if available
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('selectedInputLanguage') || 'All';
+    }
+    return 'All';
+  });
   const [showAllTranslations, setShowAllTranslations] = useState<boolean>(true);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [connectionAttempts, setConnectionAttempts] = useState(0);
@@ -384,6 +393,11 @@ export default function Room() {
       }
     };
     
+    // Handle input language changes
+    wsManagerRef.current.onInputLanguageChange = (language: string | null) => {
+      setSelectedInputLanguage(language || 'All');
+    };
+    
     // Handle meeting summary updates
     wsManagerRef.current.onSummary = (data: MeetingSummary) => {
       if (data.summary) {
@@ -456,6 +470,18 @@ export default function Room() {
     if (typeof window !== 'undefined') {
       localStorage.setItem('selectedLanguage', language);
     }
+  };
+  
+  // Change input language for transcription
+  const changeInputLanguage = (language: string) => {
+    const langValue = language === 'All' ? null : language;
+    setSelectedInputLanguage(language);
+    // Store in localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedInputLanguage', language);
+    }
+    // Send to server
+    wsManagerRef.current?.setInputLanguage(langValue);
   };
   
   // Format transcript with translations for display
@@ -936,6 +962,30 @@ export default function Room() {
           </div>
         )}
         
+        {/* Input Language Selection - New component */}
+        <div className="mb-4 bg-black/30 backdrop-blur-sm p-3 rounded-lg shadow-md">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <label className="font-medium text-sm text-gray-300">Input Language:</label>
+              <select 
+                value={selectedInputLanguage || 'All'}
+                onChange={(e) => changeInputLanguage(e.target.value)}
+                className="px-2 py-1 border border-gray-600/50 rounded text-sm bg-gray-700/50 text-white focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="All" className="bg-gray-800 text-white">Auto Detect</option>
+                {availableLanguages.map(lang => (
+                  <option key={`input-${lang}`} value={lang} className="bg-gray-800 text-white">{lang}</option>
+                ))}
+              </select>
+            </div>
+            <div className="text-xs text-gray-400">
+              {selectedInputLanguage === 'All' ? 
+                'Auto-detection enabled' : 
+                `Transcribing in ${selectedInputLanguage} only`}
+            </div>
+          </div>
+        </div>
+        
         {/* Translation controls - Adjusted for dark theme */}
         <div className={`mb-4 bg-black/30 backdrop-blur-sm p-3 rounded-lg shadow-md translation-controls ${!hasTranslations && !availableLanguages.length ? 'hidden' : ''}`}> {/* Adjusted colors */}
           <div className="flex items-center justify-between">
@@ -951,7 +1001,7 @@ export default function Room() {
             
             {!showAllTranslations && (
               <div className="flex items-center space-x-2">
-                <label className="font-medium text-sm text-gray-300">Language:</label> {/* Adjusted colors */}
+                <label className="font-medium text-sm text-gray-300">Output Language:</label> {/* Adjusted colors */}
                 <select 
                   value={selectedLanguage || ''}
                   onChange={(e) => changeLanguage(e.target.value)}
